@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from 'three';
 import backgroundMusic from './audio/eerie-ambient-10-205803.mp3';
-
+import cv from './assets/CV.png';
 
 // =====================================================================
 // Camera Rig Component (No changes needed here)
@@ -56,9 +56,9 @@ function CameraRig({ isSitting, controlsRef }) {
 
 
 // =====================================================================
-// OfficeDesk Component (Updated with correct mesh names)
+// OfficeDesk Component (Updated with new logic)
 // =====================================================================
-function OfficeDesk({ setIsSitting, ...props }) {
+function OfficeDesk({ setIsSitting, isSitting, setIsPaperOpen, ...props }) { // ✨ NEW: Accept isSitting and setIsPaperOpen
   const { scene } = useGLTF("/models/office_desk.glb");
 
   useEffect(() => {
@@ -100,13 +100,17 @@ function OfficeDesk({ setIsSitting, ...props }) {
   const handleClick = (event) => {
     event.stopPropagation();
     const clickedMesh = event.object;
-
     const meshName = clickedMesh.name;
 
-    // ✅ Based on your list:
-    // 'Object_22' is the Chair
-    // 'Object_2' is the Monitor
-    if (meshName === 'Object_22' || meshName === 'Object_2') {
+    // ✨ NEW: Updated click logic
+    // If we are sitting and click the papers, open the paper interface.
+    if (isSitting && meshName === 'Object_29') {
+      setIsPaperOpen(true);
+      return; // Stop execution here to prevent sitting again
+    }
+
+    // Original logic: if not sitting (or clicking something else), try to sit.
+    if (meshName === 'Object_22' || meshName === 'Object_2' || meshName === 'Object_29') {
       setIsSitting(true);
     }
   };
@@ -122,14 +126,62 @@ function OfficeDesk({ setIsSitting, ...props }) {
   );
 }
 
+// ✨ NEW: Paper Interface Component
+// =====================================================================
+function PaperInterface({ onClose }) {
+  const interfaceStyle = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    zIndex: 10,
+    pointerEvents: 'auto',
+    backgroundColor: '#3333336f',
+    fontFamily: 'monospace',
+    display: 'flex',            // ✅ center with flexbox
+    justifyContent: 'center',
+    alignItems: 'center'
+  };
+
+  const closeButtonStyle = {
+    position: 'absolute',
+    top: '30px',
+    right: '40px',
+    fontSize: '60px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    color: '#000000ff',
+    zIndex: 11
+  };
+
+  const cvStyle = {
+    width: '100%',            // ✅ responsive width
+    height: '100vh',          // ✅ fit vertically within screen
+    objectFit: 'contain',       // ✅ keep aspect ratio
+    borderRadius: '12px',
+  };
+
+  return (
+    <div style={interfaceStyle}>
+      <div style={closeButtonStyle} onClick={onClose}>
+        &times;
+      </div>
+      <img src={cv} alt="CV" style={cvStyle} />
+    </div>
+  );
+}
+
+
 
 // =====================================================================
-// Main App Component
+// Main App Component (Updated with new state and conditional rendering)
 // =====================================================================
 export default function App() {
   const audioRef = useRef(null);
   const controlsRef = useRef();
   const [isSitting, setIsSitting] = useState(false);
+  const [isPaperOpen, setIsPaperOpen] = useState(false); // ✨ NEW: State for the paper interface
 
   useEffect(() => {
     const handleFirstInteraction = () => {
@@ -163,7 +215,16 @@ export default function App() {
         <directionalLight castShadow position={[0, 20, 10]} intensity={1} shadow-mapSize-width={4096} shadow-mapSize-height={4096} shadow-radius={8} shadow-bias={-0.0005} shadow-normalBias={0.02} />
         <pointLight position={[50, 25, 0]} intensity={3000} color="red" distance={150} castShadow />
         <pointLight position={[0, 50, 30]} intensity={6000} color="yellow" distance={100} castShadow />
-        <OfficeDesk scale={0.5} position={[0, -1, 0]} setIsSitting={setIsSitting} />
+        
+        {/* ✨ NEW: Pass new state and setter to OfficeDesk */}
+        <OfficeDesk 
+          scale={0.5} 
+          position={[0, -1, 0]} 
+          setIsSitting={setIsSitting}
+          isSitting={isSitting}
+          setIsPaperOpen={setIsPaperOpen} 
+        />
+        
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.1, 10]} receiveShadow >
           <planeGeometry args={[2000, 2000]} />
           <meshStandardMaterial color="#111111" transparent={true} opacity={0.7} />
@@ -173,8 +234,8 @@ export default function App() {
           enableDamping
           dampingFactor={0.05}
           maxPolarAngle={isSitting ? Math.PI / 2 : Math.PI * 2}
-          minDistance={isSitting ? 5 : 50}   // keep a consistent distance while standing
-          maxDistance={isSitting ? 20 : 50}  // lock distance when standing
+          minDistance={isSitting ? 5 : 50}
+          maxDistance={isSitting ? 20 : 50}
         />
 
         <CameraRig isSitting={isSitting} controlsRef={controlsRef} />
@@ -187,6 +248,9 @@ export default function App() {
           Stand Up
         </button>
       )}
+
+      {/* ✨ NEW: Conditionally render the paper interface */}
+      {isPaperOpen && <PaperInterface onClose={() => setIsPaperOpen(false)} />}
     </div>
   );
 }
