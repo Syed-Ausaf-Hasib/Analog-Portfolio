@@ -15,6 +15,7 @@ import phoneLoopSound from './audio/phone.mp3';
 import monitorLoopSound from './audio/computer.mp3';
 import phoneScreen from './assets/Telephone.png';
 import monitorScreen from './assets/Monitor.png'; // Your monitor image with a transparent center
+import { color } from "three/tsl";
 
 
 // =====================================================================
@@ -318,13 +319,13 @@ function MonitorInterface({ onClose }) {
 
   const contentWrapperStyle = {
     position: 'relative',
-    width: '90vw',
-    height: '90vh',
-    maxWidth: '1600px',
-    maxHeight: '900px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+    aspectRatio: '2/1',
+    width: '90%',
+    maxWidth: '1600px',
   };
 
   const monitorImageStyle = {
@@ -333,20 +334,28 @@ function MonitorInterface({ onClose }) {
     left: 0,
     width: '100%',
     height: '100%',
-    objectFit: 'contain',
     zIndex: 11,
     pointerEvents: 'none',
   };
 
+  const boxStyle = {
+    position: 'relative',
+    overflow: 'hidden',
+    width: '38%',
+    height: '70%',
+    top: '-5.5%',
+    left: '0.2%',
+    borderRadius: '15px',
+  };
+
   const iframeStyle = {
     position: 'absolute',
-    zIndex: 10,
+    width: '120%',
+    height: '120%',
+    top: '-10%',
+    left: '-10%',
     border: 'none',
     backgroundColor: '#000000',
-    top: '15%',
-    margin: '0 3%',
-    width: '38%',
-    height: '60%',
   };
 
   return (
@@ -356,11 +365,14 @@ function MonitorInterface({ onClose }) {
       </div>
 
       <div style={contentWrapperStyle}>
-        <iframe
-          style={iframeStyle}
-          src="https://github.com/Syed-Ausaf-Hasib"
-          title="Monitor Content"
-        />
+        <div style={boxStyle}>
+          <iframe
+            style={iframeStyle}
+            src="https://backroomsgame.io/"
+            title="Monitor Content"
+            scrolling="no" // ✨ ADD THIS ATTRIBUTE TO DISABLE SCROLLING
+          />
+        </div>
         <img
           src={monitorScreen}
           alt="Monitor Frame"

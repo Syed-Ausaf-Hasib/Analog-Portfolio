@@ -1,0 +1,11 @@
+Model Information:
+* title:	VR Room [Light Baked]
+* source:	https://sketchfab.com/3d-models/vr-room-light-baked-4e4659da1542490dbfa3b3ca0d6bfd05
+* author:	abhayexe (https://sketchfab.com/abhayexe)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "VR Room [Light Baked]" (https://sketchfab.com/3d-models/vr-room-light-baked-4e4659da1542490dbfa3b3ca0d6bfd05) by abhayexe (https://sketchfab.com/abhayexe) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
