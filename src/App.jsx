@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from 'three';
+import { FileText, Github, Laptop, Linkedin, Mail } from 'lucide-react'; // ✨ IMPORT ICONS
 
 // Audio and Asset Imports
 import backgroundMusic from './audio/eerie-ambient-10-205803.mp3';
@@ -219,7 +220,7 @@ function PaperInterface({ onClose }) {
     position: 'absolute', // Allows you to position it freely
     width: '30%',         // Give it a width (adjust as needed)
     height: '80%',        // Give it a height (adjust as needed)
-    marginBottom: '4%',           // Position it from the top (adjust as needed)
+    marginBottom: '4%',     // Position it from the top (adjust as needed)
     backgroundColor: 'rgba(255, 0, 0, 0)', // Semi-transparent red for positioning
     zIndex: 13,           // Puts it on top of the image
     cursor: 'pointer'     // Changes the cursor to a pointer on hover
@@ -383,6 +384,63 @@ function MonitorInterface({ onClose }) {
   );
 }
 
+// =====================================================================
+// ✨ Social Links Component (NEW)
+// =====================================================================
+function SocialLinks() {
+  const [hoveredIcon, setHoveredIcon] = useState(null);
+
+  const containerStyle = {
+    position: 'absolute',
+    bottom: '30px',
+    right: '40px',
+    display: 'flex',
+    gap: '20px',
+    zIndex: 2,
+  };
+
+  // Base style for all icons
+  const baseIconStyle = {
+    width: '24px',
+    height: '24px',
+    color: '#a0a0a0', // A faded, eerie gray
+    cursor: 'pointer',
+    transition: 'transform 0.3s ease, color 0.3s ease',
+  };
+
+  // Dynamically generate icon style based on hover state
+  const getIconStyle = (iconName) => {
+    const isHovered = hoveredIcon === iconName;
+    return {
+      ...baseIconStyle,
+      transform: isHovered ? 'translateY(-3px)' : 'translateY(0)',
+      color: isHovered ? '#ffffff' : '#a0a0a0', // Brightens on hover
+    };
+  };
+
+  const links = [
+    { name: 'cv', Icon: FileText, href: 'https://drive.google.com/drive/folders/1-1PPFIQ1gCeYcLGo0XsFLxJTz8aSEWM8?usp=sharing' },
+    { name: 'github', Icon: Github, href: 'https://github.com/Syed-Ausaf-Hasib' },
+    { name: 'leetcode', Icon: Laptop, href: 'https://leetcode.com/u/Ausaf_Hasib/' },
+    { name: 'linkedin', Icon: Linkedin, href: 'https://www.linkedin.com/in/ausaf-hasib-7seven7/' },
+    { name: 'mail', Icon: Mail, href: 'mailto:syedausaf2003@gmail.com' }
+  ];
+
+  return (
+    <div style={containerStyle}>
+      {links.map(({ name, Icon, href }) => (
+        <Icon
+          key={name}
+          style={getIconStyle(name)}
+          onClick={() => window.open(href, '_blank')}
+          onMouseEnter={() => setHoveredIcon(name)}
+          onMouseLeave={() => setHoveredIcon(null)}
+        />
+      ))}
+    </div>
+  );
+}
+
 
 // =====================================================================
 // Main App Component (MODIFIED)
@@ -398,9 +456,8 @@ export default function App() {
   const monitorAudioRef = useRef(null);
 
   useEffect(() => {
-    // ✨ SET THE VOLUME WHEN THE COMPONENT MOUNTS
     if (audioRef.current) {
-      audioRef.current.volume = 0.15; // Set volume to 20% (change this value as needed)
+      audioRef.current.volume = 0.15;
     }
     
     const handleFirstInteraction = () => {
@@ -457,7 +514,7 @@ export default function App() {
     if (isMonitorOpen) {
       monitorAudioRef.current = new Audio(monitorLoopSound);
       monitorAudioRef.current.loop = true;
-      monitorAudioRef.current.volume = 0.5; // Adjust volume as needed
+      monitorAudioRef.current.volume = 0.5;
       monitorAudioRef.current.play();
     } else {
       if (monitorAudioRef.current) {
@@ -547,6 +604,9 @@ export default function App() {
       {isPaperOpen && <PaperInterface onClose={() => setIsPaperOpen(false)} />}
       {isPhoneOpen && <PhoneInterface onClose={() => setIsPhoneOpen(false)} />}
       {isMonitorOpen && <MonitorInterface onClose={() => setIsMonitorOpen(false)} />}
+      
+      {/* ✨ ADDED SOCIAL LINKS COMPONENT HERE */}
+      <SocialLinks />
     </div>
   );
 }
